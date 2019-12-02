@@ -1,3 +1,5 @@
-# Day 1: Part 1
+# 2019 Advent of Code Responses.
 
-From <https://adventofcode.com/2019/day/1>
+## As far as I got, at least.  :)
+
+From <https://adventofcode.com/2019/>
