@@ -1,4 +1,4 @@
-# 2019 Advent of Code Responses.
+# 2019 Advent of Code Responses
 
 ## As far as I got, at least.  :)
 
