@@ -13,12 +13,12 @@ i = 0
 
 def intcode_one(parameter_one, parameter_two, parameter_three, code_list):
     """Adds element in the first parameter's index with element in second parameter's index.  Places sum in third parameter's index. Returns True. """
-    list_of_codes[parameter_three] = list_of_codes[parameter_one] + list_of_codes[parameter_two]
+    code_list[parameter_three] = code_list[parameter_one] + code_list[parameter_two]
     return True
 
 def intcode_two(parameter_one, parameter_two, parameter_three, code_list):
     """Multiplies element in the first parameter's index with element in second parameter's index.  Places sum in third parameter's index. Returns True. """
-    list_of_codes[parameter_three] = list_of_codes[parameter_one] * list_of_codes[parameter_two]
+    code_list[parameter_three] = code_list[parameter_one] * code_list[parameter_two]
     return True
 
 def intcode_ninetynine(code_list):
