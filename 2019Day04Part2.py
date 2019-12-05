@@ -1,6 +1,6 @@
 # Author: Ben Wichser
 # Date: 12/03/2019
-# Description:  Calculate number of possible passwords with given rules.  see www.adventofcode.com/2019 (day 3) for more information
+# Description:  Calculate number of possible passwords with given rules.  see www.adventofcode.com/2019 (day 4) for more information
 
 
 # Part 2
