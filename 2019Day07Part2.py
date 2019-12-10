@@ -18,7 +18,7 @@ class IntCode:
         self.input_two = False
         self.code_list = list_of_codes[:]
 
-    def intcode_run(self,  input_one, input_two):
+    def intcode_run(self, input_one, input_two):
         """
         Runs computer with passed inputs.  Returns final diagnostic value.
         """
@@ -26,7 +26,6 @@ class IntCode:
         self.input_one = input_one
         self.input_two = input_two
         self.input_list = [input_one, input_two]
-
 
 
         i = 0
@@ -55,6 +54,8 @@ class IntCode:
             #parses parameter_code_list
             parameter_list = self.parameter_parser(parameter_code_list, parameter_list, self.code_list, opcode)
 
+
+
             if opcode == 1:
                 self.intcode_one(parameter_list, self.code_list)
 
@@ -66,6 +67,7 @@ class IntCode:
 
             elif opcode == 4:
                 output = self.intcode_four(parameter_list, self.code_list)
+                print(output)
 
             elif opcode == 5:
                 i = self.intcode_five(parameter_list, self.code_list, i)
@@ -81,6 +83,7 @@ class IntCode:
 
             elif opcode == 99:
                 keep_going = self.intcode_ninetynine(parameter_list, self.code_list)
+                output = False
 
             else:
                 print('and I oop... opcode error')
@@ -197,14 +200,20 @@ comp_5 = IntCode(code_list)
 
 
 thrusters = 0
-for test in list(permutations(range(0,5))):
+for test in list(permutations(range(5,10))):
     output  = 0
     i = 0
-    for computer in [comp_1, comp_2, comp_3, comp_4, comp_5]:
-        output = computer.intcode_run(test[i], output)
+    finished = False
+    computers = [comp_1, comp_2, comp_3, comp_4, comp_5]
+    while finished == False:
+        output = computers[i].intcode_run(test[i], output)
         i+=1
+        i = i%5
+        if output == False:
+            finished = True
     if thrusters == 0 or output > thrusters:
             thrusters = output
+
 
 
 print(thrusters)
