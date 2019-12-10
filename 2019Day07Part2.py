@@ -75,7 +75,6 @@ class IntCode:
 
             elif opcode == 4:
                 output = self.intcode_four(parameter_list, self.code_list)
-                print(output, self.i)
                 return output, self.i
 
             elif opcode == 5:
@@ -218,7 +217,6 @@ def first_computer_run(computer_list):
     for i in range(len(computer_list)):
         index = computer_list[i][0].intcode_phase_setter(computer_list[i][1])
         computer_list[i] = [computer_list[i][0], index]
-        print(computer_list)
     return computer_list
 
 
@@ -231,11 +229,9 @@ def subsequent_computer_run(computers):
         output, index = computers[i][0].intcode_run(output, computers[i][1])
         computers[i][1] = index
         if i == 4:
-            print('Done doing computer loop')
             if index != False:
                 last_e_output = output
             elif index == False:
-                print('Returning from subsequent_computer_run')
                 return last_e_output
         i = (i+1)%5
 
