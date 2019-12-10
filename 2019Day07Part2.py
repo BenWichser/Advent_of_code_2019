@@ -18,41 +18,49 @@ class IntCode:
         self.input_two = False
         self.code_list = list_of_codes[:]
 
-    def intcode_run(self, input_one, input_two):
+    def intcode_phase_setter(self, phase_setting):
         """
-        Runs computer with passed inputs.  Returns final diagnostic value.
+        First intcode run, processing the phase setting.
         """
+        self.i = 0
+        self.phase_setting = phase_setting
+        #creates opcode and parameter list
+        raw_opcode, raw_parameter_list, self.i = self.create_opcode(self.code_list, self.i)
+        
+        #does intcode operations
+        (opcode, parameter_code_list) = self.intcode_parse(raw_opcode)
 
-        self.input_one = input_one
-        self.input_two = input_two
-        self.input_list = [input_one, input_two]
+        #parses parameter_code_list
+        parameter_list = self.parameter_parser(parameter_code_list, raw_parameter_list, self.code_list, opcode)
+
+        if opcode == 3:
+            self.intcode_three(parameter_list, self.code_list, self.phase_setting)
+        else:
+            print('And I oop...initial code is not 3.')
+
+        return self.i
 
 
-        i = 0
-        keep_going = True
-        while keep_going:
-            #creates opcode
-            opcode = self.code_list[i]
-            i+=1
-            #initializes parameter list.
-            parameter_list = []
-            #grabs parameters, as necessary    
-            if opcode%100 not in {99}:
-                parameter_list.append(self.code_list[i])
-                i+=1
-            if opcode%100 not in {3, 4, 99}:
-                parameter_list.append(self.code_list[i])
-                i+=1
-            if opcode%100 not in {3, 4, 5, 6, 99}:
-                parameter_list.append(self.code_list[i])
-                i+=1
+
+
+
+
+    def intcode_run(self, comp_input, i ):
+        """
+        Runs computer with passed inputs, starting at given location.  Returns final diagnostic value.
+        """
+        self.i = i
+        self.comp_input = comp_input
+        while True:
+            #creates opcode and parameter list
+            raw_opcode, raw_parameter_list, self.i = self.create_opcode(self.code_list, self.i)
             
             #does intcode operations
-            (opcode, parameter_code_list) = self.intcode_parse(opcode)
+            (opcode, parameter_code_list) = self.intcode_parse(raw_opcode)
 
 
             #parses parameter_code_list
-            parameter_list = self.parameter_parser(parameter_code_list, parameter_list, self.code_list, opcode)
+            parameter_list = self.parameter_parser(parameter_code_list, raw_parameter_list, self.code_list, opcode)
 
 
 
@@ -63,17 +71,18 @@ class IntCode:
                 self.intcode_two(parameter_list, self.code_list)
 
             elif opcode == 3:
-                self.intcode_three(parameter_list, self.code_list, self.input_list.pop(0))
+                self.intcode_three(parameter_list, self.code_list, self.comp_input)
 
             elif opcode == 4:
                 output = self.intcode_four(parameter_list, self.code_list)
-                print(output)
+                print(output, self.i)
+                return output, self.i
 
             elif opcode == 5:
-                i = self.intcode_five(parameter_list, self.code_list, i)
+                self.i = self.intcode_five(parameter_list, self.code_list, self.i)
 
             elif opcode == 6:
-                i = self.intcode_six(parameter_list, self.code_list, i)
+                self.i = self.intcode_six(parameter_list, self.code_list, self.i)
 
             elif opcode == 7:
                 self.intcode_seven(parameter_list, self.code_list)
@@ -82,12 +91,33 @@ class IntCode:
                 self.intcode_eight(parameter_list, self.code_list)
 
             elif opcode == 99:
-                keep_going = self.intcode_ninetynine(parameter_list, self.code_list)
-                output = False
+                #self.intcode_ninetynine(parameter_list, self.code_list)
+                return 0, False
 
             else:
                 print('and I oop... opcode error')
-        return output
+        
+        print('And I oop...out of while loop...')
+
+    def create_opcode(self, code_list, i):
+        self.i = i
+        opcode = self.code_list[self.i]
+        self.i+=1
+        #initializes parameter list.
+        raw_parameter_list = []
+        #grabs parameters, as necessary    
+        if opcode%100 not in {99}:
+            raw_parameter_list.append(self.code_list[self.i])
+            self.i+=1
+        if opcode%100 not in {3, 4, 99}:
+            raw_parameter_list.append(self.code_list[self.i])
+            self.i+=1
+        if opcode%100 not in {3, 4, 5, 6, 99}:
+            raw_parameter_list.append(self.code_list[self.i])
+            self.i+=1
+        return opcode, raw_parameter_list, self.i
+
+
 
 
 
@@ -183,13 +213,39 @@ class IntCode:
         return False
 
 
+def first_computer_run(computer_list):
+    """ First run of IntCode Computers.  Accepts computer list and phase_setting.  Returns list of computers, phase settings, indices for future runs."""
+    for i in range(len(computer_list)):
+        index = computer_list[i][0].intcode_phase_setter(computer_list[i][1])
+        computer_list[i] = [computer_list[i][0], index]
+        print(computer_list)
+    return computer_list
+
+
+
+def subsequent_computer_run(computers):
+    # initialize the index and first input of 0
+    i = 0
+    output = 0
+    while True:
+        output, index = computers[i][0].intcode_run(output, computers[i][1])
+        computers[i][1] = index
+        if i == 4:
+            print('Done doing computer loop')
+            if index != False:
+                last_e_output = output
+            elif index == False:
+                print('Returning from subsequent_computer_run')
+                return last_e_output
+        i = (i+1)%5
+
 
 
 code_list = [3,8,1001,8,10,8,105,1,0,0,21,46,63,76,97,118,199,280,361,442,99999,3,9,102,4,9,9,101,2,9,9,1002,9,5,9,101,4,9,9,102,2,9,9,4,9,99,3,9,101,5,9,9,102,3,9,9,101,3,9,9,4,9,99,3,9,1001,9,2,9,102,3,9,9,4,9,99,3,9,1002,9,5,9,101,4,9,9,1002,9,3,9,101,2,9,9,4,9,99,3,9,1002,9,5,9,101,3,9,9,1002,9,5,9,1001,9,5,9,4,9,99,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,99,3,9,1002,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,102,2,9,9,4,9,99,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,99,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,2,9,9,4,9,99,3,9,101,1,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,2,9,9,4,9,99]
 
 
-# code_list_test = [3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0]
-
+# code_list = [3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,
+# 27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5]
 
 #Creates the computers
 comp_1 = IntCode(code_list)
@@ -197,23 +253,15 @@ comp_2 = IntCode(code_list)
 comp_3 = IntCode(code_list)
 comp_4 = IntCode(code_list)
 comp_5 = IntCode(code_list)
-
+comp_list = [comp_1, comp_2, comp_3, comp_4, comp_5]
 
 thrusters = 0
 for test in list(permutations(range(5,10))):
-    output  = 0
-    i = 0
-    finished = False
-    computers = [comp_1, comp_2, comp_3, comp_4, comp_5]
-    while finished == False:
-        output = computers[i].intcode_run(test[i], output)
-        i+=1
-        i = i%5
-        if output == False:
-            finished = True
-    if thrusters == 0 or output > thrusters:
-            thrusters = output
-
-
+    #run computers through initial phase-setter
+    initial_computer_list = [ [comp_list[i], test[i]] for i in range(5)]
+    computer_list = first_computer_run(initial_computer_list)
+    #runs computers in loop until they exit.
+    e_output = subsequent_computer_run(computer_list)
+    thrusters = max(e_output, thrusters)
 
 print(thrusters)
