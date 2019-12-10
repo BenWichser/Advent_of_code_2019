@@ -4,7 +4,6 @@
 
 
 
-# Part 1
 def make_orbit_codes(text_file):
     """Reads text file with each line in form "ASK)DGE" and returns list of codes."""
     fin = open(text_file)
