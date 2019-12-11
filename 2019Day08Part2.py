@@ -46,4 +46,12 @@ for layer in image:
     current_layer  = layer_maker(current_layer, layer)
 
 for row in current_layer:
-    print(row)
+    new_row = ''
+    for i in range(len(row)):
+        if row[i] == 1:
+            row[i] = "X"
+        else:
+            row[i] = ' '
+        new_row += row[i]
+        
+    print(new_row)
