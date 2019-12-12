@@ -46,8 +46,8 @@ image_width = 25
 image_height = 6
 layer_size = image_height*image_width
 
-code = get_image_code(
-    './mars_image_data.txt')
+code = get_asteroid_layout(
+    './asteroid_locations.txt')
 image = image_layerer(code, image_width, image_height)
 max_count_list = [150, 0, 0]
 for layer in image:

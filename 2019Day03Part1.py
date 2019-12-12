@@ -5,7 +5,7 @@
 
 # Part 1
 
-fin = open('/Users/benjamenwichser/Documents/OregonState/2019Fall/AdventOfCode/Advent_of_code_2019_day1_part1/wire_direction_codes')
+fin = open('./wire_direction_codes')
 
 wire_1_codes = fin.readline().split(',')
 wire_2_codes = fin.readline().split(',')

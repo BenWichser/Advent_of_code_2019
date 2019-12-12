@@ -37,7 +37,6 @@ def make_distance_dict(orbit_dict, key1):
     current_vertices = orbit_dict[key1]
     while len(orbit_set) !=0:
         orbits += 1
-        print(orbits)
         new_vertices = []
         while len(current_vertices) != 0:
             current_vertex = current_vertices.pop(0)
@@ -51,7 +50,7 @@ def make_distance_dict(orbit_dict, key1):
 
 
 
-orbit_codes = make_orbit_codes('/Users/benjamenwichser/Documents/OregonState/2019Fall/AdventOfCode/Advent_of_code_2019/orbits.txt')
+orbit_codes = make_orbit_codes('./orbits.txt')
 
 orbit_dict = make_orbit_dict(orbit_codes)
 

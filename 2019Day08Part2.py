@@ -39,7 +39,7 @@ image_height = 6
 layer_size = image_height*image_width
 
 code = get_image_code(
-    '/Users/benjamenwichser/Documents/OregonState/2019Fall/AdventOfCode/Advent_of_code_2019/mars_image_data.txt')
+    './mars_image_data.txt')
 image = image_layerer(code, image_width, image_height)
 current_layer  = [ [2 for _ in range(image_width)] for _ in range(image_height)]
 for layer in image:

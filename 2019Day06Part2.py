@@ -62,7 +62,7 @@ def path_maker(orbit_dict, vertex):
     return path_list[::-1]
 
 
-orbit_codes = make_orbit_codes('/Users/benjamenwichser/Documents/OregonState/2019Fall/AdventOfCode/Advent_of_code_2019/orbits.txt')
+orbit_codes = make_orbit_codes('./orbits.txt')
 
 orbit_dict = make_orbit_dict(orbit_codes)
 
@@ -73,14 +73,8 @@ distances = make_distance_dict(orbit_dict, key1)
 
 you_list = path_maker(orbit_dict, 'YOU')
 san_list = path_maker(orbit_dict, 'SAN')
-print(len(you_list))
-print(len(san_list))
 you_set = set(you_list) - set(san_list)
 san_set = set(san_list) - set(you_list)
 
-print(you_set)
-
-print(len(you_set) )
-print(len(san_set))
 
 print(len(you_list) + len(san_list) - 2* 70 - 2)
