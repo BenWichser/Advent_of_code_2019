@@ -16,84 +16,155 @@ def intcode_parse(code):
     while parameter_piece > 0:
         parameter_code_list.append(parameter_piece % 10)
         parameter_piece = parameter_piece // 10
- 
- 
 
     return (actual_code, parameter_code_list)
 
-def parameter_parser(parameter_code_list, parameter_list, code_list, opcode):
+def parameter_code_sizer(opcode, raw_parameter_code_list):
+    """Ensures parameter code list is the correct length, according to the particular opcode."""
+    parameter_lengths = {1:3, 2:3, 3: 1, 4: 1, 5: 2, 6:2, 7: 3, 8:3, 9:1, 99:0}
+    while len(raw_parameter_code_list) < parameter_lengths[opcode]:
+        raw_parameter_code_list.append(0)
+    return raw_parameter_code_list
+
+
+def code_list_lengthener(code_list, parameter):
+    """Ensures that code_list is long enough to accept an item in its parameter-th location"""
+    while len(code_list) < parameter+1:
+        code_list.append(0)
+    return code_list
+
+
+def parameter_tuple_maker(parameter_code, code_list, i):
     """
-    Accepts parameter_code_list, parameter_list and code_list [lists] from a particular opcode instruction and subsequent entries.
-    Returns list of parameters.
+    Accepts parameter_code, code_list, relative_base, and i.
+    Returns parameter_code, parameter tuple for opcode operation.
     """
 
-    for i in range(len(parameter_list)-1):
-        if i >= len(parameter_code_list):
-            parameter_list[i] = code_list[parameter_list[i]]
-        elif parameter_code_list[i] == 0:
-            parameter_list[i] = code_list[parameter_list[i]]
-        elif parameter_code_list[i] == 1:
-            parameter_list[i] = parameter_list[i]
-        else:
-            print('And I oop....parameter_creator')
+    return (parameter_code, code_list[i])
 
-    if opcode in {4} and len(parameter_code_list) < 1:
-        parameter_list[-1] = code_list[parameter_list[-1]]
-        
-    if opcode in {5, 6 } and len(parameter_code_list) < 2:
-        parameter_list[-1] = code_list[parameter_list[-1]]
-    
-    return parameter_list
+def parameter_tuple_parser(parameter_tuple, code_list, relative_base):
+    """
+    Accepts parameter_tuple, code_list, and relative_base.  Returns parameter for use in intcode operation.
+    """
 
+    if parameter_tuple[0] == 0:
+        return code_list[parameter_tuple[1]]
+    elif parameter_tuple[0] == 1:
+        return parameter_tuple[1]
+    elif parameter_tuple[0] == 2:
+        return code_list[parameter_tuple[1] + relative_base]
+    else:
+        print('And I oop.... parameter_tuple_parser')
 
-def intcode_one(parameter_list, code_list):
+def intcode_one(parameter_list, code_list, relative_base):
     """Adds elements in the parameter_list's first two elements.  Places sum in parameter_list[2]. Returns True. """
-    code_list[parameter_list[2]] = parameter_list[0] + parameter_list[1]
+    for i in range(len(parameter_list) - 1):
+        parameter_list[i] = parameter_tuple_parser(parameter_list[i], code_list, relative_base)
+    
+    if parameter_list[-1][0] == 0:
+        code_list = code_list_lengthener(code_list, parameter_list[-1][1])
+        code_list[parameter_list[-1][1]] = parameter_list[0] + parameter_list[1]
+    elif parameter_list[-1][0] == 2:
+        code_list = code_list_lengthener(code_list, parameter_list[-1][1]+relative_base)
+        code_list[parameter_list[-1][1] + relative_base] = parameter_list[0] + parameter_list[1]
+    else:
+        print("And I oop... intcode_one")
     return True
 
-def intcode_two(parameter_list, code_list):
+def intcode_two(parameter_list, code_list, relative_base):
     """Multiplies elements in the parameter_list's first two elements.  Places product in parameter_list[2]. Returns True. """
-    code_list[parameter_list[2]] = parameter_list[0] * parameter_list[1]
+    for i in range(len(parameter_list) - 1):
+        parameter_list[i] = parameter_tuple_parser(parameter_list[i], code_list, relative_base)
+        
+    if parameter_list[-1][0] == 0:
+        code_list = code_list_lengthener(code_list, parameter_list[-1][1])
+        code_list[parameter_list[-1][1]] = parameter_list[0] * parameter_list[1]
+    elif parameter_list[-1][0] == 2:
+        code_list = code_list_lengthener(code_list, parameter_list[-1][1]+relative_base)
+        code_list[parameter_list[-1][1] + relative_base] = parameter_list[0] * parameter_list[1]
+    else:
+        print("And I oop...intcode_two")
     return True
 
-def intcode_three(parameter_list, code_list):
+def intcode_three(parameter_list, code_list, relative_base):
     """ Accepts input and places it in parameter_list[0] place in code_list.  Returns True. """
-    number_in = int(input('Please enter a number: ') or "5")
-    code_list[parameter_list[0]] = number_in
+    number_in = int(input('Please enter a number: ') or "1")
+    if parameter_list[0][0] == 0:
+        code_list = code_list_lengthener(code_list, parameter_list[0][1])
+        code_list[parameter_list[0][1]] = number_in
+    elif parameter_list[0][0] ==2:
+        code_list = code_list_lengthener(code_list, parameter_list[0][1]+relative_base)
+        code_list[parameter_list[0][1] + relative_base] = number_in
+    else:
+        print("And I oop...intcode_three")
     return True
 
-def intcode_four(parameter_list, code_list):
+def intcode_four(parameter_list, code_list, relative_base):
     """ Prints item in parameter_list[0] place in code_list.  Returns True. """
-    print(parameter_list[0])
+    for i in range(len(parameter_list)):
+        parameter_list[i] = parameter_tuple_parser(parameter_list[i], code_list, relative_base)
+    
+    print(parameter_list[-1])
+        
     return True
 
-def intcode_five(parameter_list, code_list, i):
+def intcode_five(parameter_list, code_list, relative_base, i):
     """If first parameter is non-zero, sets instruction pointer to second parameter.  Returns i"""
+    for j in range(len(parameter_list)):
+        parameter_list[j] = parameter_tuple_parser(parameter_list[j], code_list, relative_base)
     if parameter_list[0] != 0:
-        i = parameter_list[1]
+        i = parameter_list[-1]
     return i
 
-def intcode_six(parameter_list, code_list, i):
+def intcode_six(parameter_list, code_list, relative_base,  i):
     """If first parameter is zero, sets instruction pointer to second parameter.  Returns i"""
+    for j in range(len(parameter_list)):
+        parameter_list[j] = parameter_tuple_parser(parameter_list[j], code_list, relative_base)
     if parameter_list[0] == 0:
-        i = parameter_list[1]
+        i = parameter_list[-1]
     return i
 
-def intcode_seven(parameter_list, code_list):
+def intcode_seven(parameter_list, code_list, relative_base):
     """If first parameter is less than second parameter, stores 1 in third parameter.  Else stores 0 in third parameter.  Returns True"""
+    for i in range(len(parameter_list) - 1):
+        parameter_list[i] = parameter_tuple_parser(parameter_list[i], code_list, relative_base)
+    if parameter_list[-1][0] == 0:
+        parameter_list[-1] = parameter_list[-1][1]
+    elif parameter_list[-1][0] == 2:
+        parameter_list[-1] = parameter_list[-1][1] + relative_base
+
     if parameter_list[0] < parameter_list[1]:
-        code_list[parameter_list[2]] = 1
+        code_list = code_list_lengthener(code_list, parameter_list[-1])
+        code_list[parameter_list[-1]] = 1
     else:
-        code_list[parameter_list[2]] = 0
+        code_list = code_list_lengthener(code_list, parameter_list[-1])
+        code_list[parameter_list[-1]] = 0
     return True
 
-def intcode_eight(parameter_list, code_list):
+def intcode_eight(parameter_list, code_list, relative_base):
     """If first parameter is equal to  second parameter, stores 1 in third parameter.  Else stores 0 in third parameter.  Returns True"""
+    for i in range(len(parameter_list) - 1):
+        parameter_list[i] = parameter_tuple_parser(parameter_list[i], code_list, relative_base)
+    if parameter_list[-1][0] == 0:
+        parameter_list[-1] = parameter_list[-1][1]
+    elif parameter_list[-1][0] == 2:
+        parameter_list[-1] = parameter_list[-1][1] + relative_base
+
     if parameter_list[0] == parameter_list[1]:
-        code_list[parameter_list[2]] = 1
+        code_list = code_list_lengthener(code_list, parameter_list[-1])
+        code_list[parameter_list[-1]] = 1
     else:
-        code_list[parameter_list[2]] = 0
+        code_list = code_list_lengthener(code_list, parameter_list[-1])
+        code_list[parameter_list[-1]] = 0
     return True
+
+def intcode_nine(parameter_list, code_list, relative_base):
+    """ Adjust the relative base by the first parameter.  Returns new relative_base"""
+    for i in range(len(parameter_list)):
+        parameter_list[i] = parameter_tuple_parser(parameter_list[i], code_list, relative_base)
+
+    relative_base += parameter_list[0]
+    return relative_base
 
 
 def intcode_ninetynine(parameter_list, code_list):
@@ -101,56 +172,59 @@ def intcode_ninetynine(parameter_list, code_list):
     return False
 
 
+
+###Need to do: Lengthen the parser to be length for each code.  Take parameters one at a time and change them to list index pointers along the way (ensuring code list is long enough each time).  Alter incode operations to account for this.
 i = 0
+relative_base = 0
 keep_going = True
 while keep_going:
-    #creates opcode
-    opcode = code_list[i]
+    #reads raw opcode
+    raw_opcode = code_list[i]
     i+=1
-    #initializes parameter list.
+        
+    #does intcode operation direction parsing
+    (opcode, raw_parameter_code_list) = intcode_parse(raw_opcode)
+
+    #Ensure the parameter code list is correct length for the code.
+    parameter_code_list = parameter_code_sizer(opcode, raw_parameter_code_list)
+
+    #Create actual list of parameters for each opcode operation
     parameter_list = []
-    #grabs parameters, as necessary    
-    if opcode%100 not in {99}:
-        parameter_list.append(code_list[i])
-        i+=1
-    if opcode%100 not in {3, 4, 99}:
-        parameter_list.append(code_list[i])
-        i+=1
-    if opcode%100 not in {3, 4, 5, 6, 99}:
-        parameter_list.append(code_list[i])
-        i+=1
-    
-    #does intcode operations
-    (opcode, parameter_code_list) = intcode_parse(opcode)
 
-
-    #parses parameter_code_list
-    parameter_list = parameter_parser(parameter_code_list, parameter_list, code_list, opcode)
+    #grabs parameters, as necessary
+    index = 0
+    while len(parameter_list) < len(parameter_code_list):    
+        parameter_list.append(parameter_tuple_maker(parameter_code_list[index], code_list, i))
+        i += 1
+        index += 1
 
 
     if opcode == 1:
-        intcode_one(parameter_list, code_list)
+        intcode_one(parameter_list, code_list, relative_base)
 
     elif opcode == 2:
-        intcode_two(parameter_list, code_list)
+        intcode_two(parameter_list, code_list, relative_base)
 
     elif opcode == 3:
-        intcode_three(parameter_list, code_list)
+        intcode_three(parameter_list, code_list, relative_base)
 
     elif opcode == 4:
-        intcode_four(parameter_list, code_list)
+        intcode_four(parameter_list, code_list, relative_base)
 
     elif opcode == 5:
-        i = intcode_five(parameter_list, code_list, i)
+        i = intcode_five(parameter_list, code_list, relative_base, i)
 
     elif opcode == 6:
-        i = intcode_six(parameter_list, code_list, i)
+        i = intcode_six(parameter_list, code_list, relative_base, i)
 
     elif opcode == 7:
-        intcode_seven(parameter_list, code_list)
+        intcode_seven(parameter_list, code_list, relative_base)
 
     elif opcode == 8:
-        intcode_eight(parameter_list, code_list)
+        intcode_eight(parameter_list, code_list, relative_base)
+    
+    elif opcode == 9:
+        relative_base = intcode_nine(parameter_list, code_list, relative_base)
 
     elif opcode == 99:
         keep_going = intcode_ninetynine(parameter_list, code_list)
