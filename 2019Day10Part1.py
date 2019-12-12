@@ -3,56 +3,75 @@
 # Description:  Image layer checksum.  see www.adventofcode.com/2019 (day 8) for more information
 
 
-def get_image_code(file_name):
-    """Reads specified text file of single string and returns that string."""
-    code_object = open(file_name)
-    for line in code_object:
-        code = str(line.strip())
-    return code
+def get_asteroid_map(file_name):
+    """Reads asteroid layout map (file of string of lines of text), and finds the asteroids (#).  Returns string locations of the asteroids map rows."""
+    asteroid_map = []
+    map = open(file_name)
+    for row in map:
+        asteroid_map.append(str(row.strip()))
+    return asteroid_map
+
+def get_asteroid_layout(asteroid_map):
+    """Reads asteroid map (list of rows of asteroid strings).  Returns list of tuples of asteroid locations."""
+    asteroid_layout = []
+    number_of_rows = len(asteroid_map)
+    number_of_columns = len(asteroid_map[0])
+    for i in range(number_of_rows):
+        for j in range(number_of_columns):
+            if asteroid_map[i][j] == '#':
+                asteroid_layout.append( (j,i))
+    return asteroid_layout
+
+def can_asteroid_see_you(asteroid, other_asteroid, asteroid_layout):
+    """Reads two asteroids (tuples) and an asteroid_map (list).  Returns whether or not the asteroids can see each other."""
+    asteroid_x = asteroid[0]
+    asteroid_y = asteroid[1]
+    other_x = other_asteroid[0]
+    other_y = other_asteroid[1]
+    delta_x = other_x  - asteroid_x
+    delta_y = other_y - asteroid_y
 
 
-def image_layerer(code, width, height):
-    """Accepts long string and returns it as a list of list of list of elements.  layers of rows of values."""
-    image = []
-    while code:
-        image_layer = []
-        for _ in range(height):
-            image_layer_row = []
-            for _ in range(width):
-                image_layer_row.append(int(code[0]))
-                code = code[1:]
-            image_layer.append(image_layer_row)
-        image.append(image_layer)
-    return image
+    #Vertical lines have no slope.  We check by changing y only
+    if delta_x == 0:
+        min_y = min(asteroid_y, other_y)
+        for i in range(1, abs(delta_y)):
+            if (asteroid_x, min_y + i) in asteroid_layout:
+                return False
+    #Non-vertical lines have slope.  We check by chaning by one x and the slope and see if there's an asteroid there.
+    else:
+        slope = delta_y / delta_x
+        #We start with the asteroid on the left
+        if asteroid_x < other_x:
+            min_x = asteroid_x
+            min_x_y = asteroid_y
+        else:
+            min_x = other_x
+            min_x_y = other_y
+        #Checking all the spots along the way for asteroids.
+        for i in range(1, abs(delta_x)):
+            maybe_other = (min_x + i, min_x_y + i*slope)
+            if maybe_other in asteroid_layout:
+                return False
+
+    return True
 
 
-def code_counter(data_list):
-    """ Counts each code in each element of a list of lists.  Assumes elements are 0, 1, 2.  Returns list of counts"""
-    count_list = [0, 0, 0]
-    for item in data_list:
-        for i in item:
-            if i == 0:
-                count_list[0] += 1
-            elif i == 1:
-                count_list[1] += 1
-            elif i == 2:
-                count_list[2] += 1
-            else:
-                print('And I oop... not just 0, 1, 2')
-    return count_list
+def asteroid_counter(asteroid, asteroid_layout, asteroid_map):
+    """Reads particular asteroid (tuple of x,y) and asteroid_layout(list of asteroid_layouts).  Returns the number of asteroids that asteroid can see."""
+    seen = 0
+    for other_asteroid in asteroid_layout:
+        if asteroid != other_asteroid:
+            if can_asteroid_see_you(asteroid, other_asteroid, asteroid_layout):
+                seen +=1    
+    return seen
 
+asteroid_map = get_asteroid_map('./asteroid_locations.txt')
+asteroid_layout = get_asteroid_layout(asteroid_map)
 
-image_width = 25
-image_height = 6
-layer_size = image_height*image_width
+max_seen = 0
+for asteroid in asteroid_layout:
+    seen = asteroid_counter(asteroid, asteroid_layout, asteroid_map)
+    max_seen = max(seen, max_seen)
 
-code = get_asteroid_layout(
-    './asteroid_locations.txt')
-image = image_layerer(code, image_width, image_height)
-max_count_list = [150, 0, 0]
-for layer in image:
-    count_list = code_counter(layer)
-    if count_list[0] < max_count_list[0]:
-        max_count_list = count_list
-
-print(max_count_list[1] * max_count_list[2])
+print(max_seen)
