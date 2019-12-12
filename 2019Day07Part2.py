@@ -117,9 +117,6 @@ class IntCode:
         return opcode, raw_parameter_list, self.i
 
 
-
-
-
     def intcode_parse(self, code):
         """Accepts intcode.  Parses intcode and returns individual parameters. """
         actual_code = code % 100

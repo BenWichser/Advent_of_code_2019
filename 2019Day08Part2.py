@@ -25,13 +25,13 @@ def image_layerer(code, width, height):
         image.append(image_layer)
     return image
 
+
 def layer_maker(top_layer, bottom_layer):
     for row in range(len(top_layer)):
         for column in range(len(top_layer[row])):
             if top_layer[row][column] == 2:
                 top_layer[row][column] = bottom_layer[row][column]
     return top_layer
-
 
 
 image_width = 25
@@ -41,9 +41,9 @@ layer_size = image_height*image_width
 code = get_image_code(
     './mars_image_data.txt')
 image = image_layerer(code, image_width, image_height)
-current_layer  = [ [2 for _ in range(image_width)] for _ in range(image_height)]
+current_layer = [[2 for _ in range(image_width)] for _ in range(image_height)]
 for layer in image:
-    current_layer  = layer_maker(current_layer, layer)
+    current_layer = layer_maker(current_layer, layer)
 
 for row in current_layer:
     new_row = ''
@@ -53,5 +53,5 @@ for row in current_layer:
         else:
             row[i] = ' '
         new_row += row[i]
-        
+
     print(new_row)

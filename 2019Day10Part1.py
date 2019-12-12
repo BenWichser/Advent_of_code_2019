@@ -11,6 +11,7 @@ def get_asteroid_map(file_name):
         asteroid_map.append(str(row.strip()))
     return asteroid_map
 
+
 def get_asteroid_layout(asteroid_map):
     """Reads asteroid map (list of rows of asteroid strings).  Returns list of tuples of asteroid locations."""
     asteroid_layout = []
@@ -19,8 +20,9 @@ def get_asteroid_layout(asteroid_map):
     for i in range(number_of_rows):
         for j in range(number_of_columns):
             if asteroid_map[i][j] == '#':
-                asteroid_layout.append( (j,i))
+                asteroid_layout.append((j, i))
     return asteroid_layout
+
 
 def can_asteroid_see_you(asteroid, other_asteroid, asteroid_layout):
     """Reads two asteroids (tuples) and an asteroid_layout (list).  Returns whether or not the asteroids can see each other."""
@@ -28,27 +30,26 @@ def can_asteroid_see_you(asteroid, other_asteroid, asteroid_layout):
     asteroid_y = asteroid[1]
     other_x = other_asteroid[0]
     other_y = other_asteroid[1]
-    delta_x = other_x  - asteroid_x
+    delta_x = other_x - asteroid_x
     delta_y = other_y - asteroid_y
 
-
-    #Vertical lines have no slope.  We check by changing y only
+    # Vertical lines have no slope.  We check by changing y only
     if delta_x == 0:
         min_y = min(asteroid_y, other_y)
         for i in range(1, abs(delta_y)):
             if (asteroid_x, min_y + i) in asteroid_layout:
                 return False
-    #Non-vertical lines have slope.  We check by chaning by one x and the slope and see if there's an asteroid there.
+    # Non-vertical lines have slope.  We check by chaning by one x and the slope and see if there's an asteroid there.
     else:
         slope = delta_y / delta_x
-        #We start with the asteroid on the left
+        # We start with the asteroid on the left
         if asteroid_x < other_x:
             min_x = asteroid_x
             min_x_y = asteroid_y
         else:
             min_x = other_x
             min_x_y = other_y
-        #Checking all the spots along the way for asteroids.
+        # Checking all the spots along the way for asteroids.
         for i in range(1, abs(delta_x)):
             maybe_other = (min_x + i, min_x_y + i*slope)
             if maybe_other in asteroid_layout:
@@ -63,8 +64,9 @@ def asteroid_counter(asteroid, asteroid_layout):
     for other_asteroid in asteroid_layout:
         if asteroid != other_asteroid:
             if can_asteroid_see_you(asteroid, other_asteroid, asteroid_layout):
-                seen +=1    
+                seen += 1
     return seen
+
 
 asteroid_map = get_asteroid_map('./asteroid_locations.txt')
 asteroid_layout = get_asteroid_layout(asteroid_map)
