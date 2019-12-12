@@ -1,6 +1,6 @@
 # Author: Ben Wichser
-# Date: 12/10/2019
-# Description:  Image layer checksum.  see www.adventofcode.com/2019 (day 8) for more information
+# Date: 12/12/2019
+# Description:  Find asteroid with the best view.  see www.adventofcode.com/2019 (day 10) for more information
 
 
 def get_asteroid_map(file_name):
