@@ -2,13 +2,14 @@
 # Date: 12/09/2019
 # Description:  Intcode computer seeks maximum thrust.  Must provide proper input sequence for the 5 computers.  see www.adventofcode.com/2019 (day 5) for more information
 
-from itertools import permutations 
+from itertools import permutations
 
 
 class IntCode:
     """
     IntCode Computer.
     """
+
     def __init__(self, list_of_codes):
         """
         Init.  Creates computer.
@@ -27,33 +28,31 @@ class IntCode:
         self.input_two = input_two
         self.input_list = [input_one, input_two]
 
-
-
         i = 0
         keep_going = True
         while keep_going:
-            #creates opcode
+            # creates opcode
             opcode = self.code_list[i]
-            i+=1
-            #initializes parameter list.
+            i += 1
+            # initializes parameter list.
             parameter_list = []
-            #grabs parameters, as necessary    
-            if opcode%100 not in {99}:
+            # grabs parameters, as necessary
+            if opcode % 100 not in {99}:
                 parameter_list.append(self.code_list[i])
-                i+=1
-            if opcode%100 not in {3, 4, 99}:
+                i += 1
+            if opcode % 100 not in {3, 4, 99}:
                 parameter_list.append(self.code_list[i])
-                i+=1
-            if opcode%100 not in {3, 4, 5, 6, 99}:
+                i += 1
+            if opcode % 100 not in {3, 4, 5, 6, 99}:
                 parameter_list.append(self.code_list[i])
-                i+=1
-            
-            #does intcode operations
+                i += 1
+
+            # does intcode operations
             (opcode, parameter_code_list) = self.intcode_parse(opcode)
 
-
-            #parses parameter_code_list
-            parameter_list = self.parameter_parser(parameter_code_list, parameter_list, self.code_list, opcode)
+            # parses parameter_code_list
+            parameter_list = self.parameter_parser(
+                parameter_code_list, parameter_list, self.code_list, opcode)
 
             if opcode == 1:
                 self.intcode_one(parameter_list, self.code_list)
@@ -62,7 +61,8 @@ class IntCode:
                 self.intcode_two(parameter_list, self.code_list)
 
             elif opcode == 3:
-                self.intcode_three(parameter_list, self.code_list, self.input_list.pop(0))
+                self.intcode_three(
+                    parameter_list, self.code_list, self.input_list.pop(0))
 
             elif opcode == 4:
                 output = self.intcode_four(parameter_list, self.code_list)
@@ -80,13 +80,12 @@ class IntCode:
                 self.intcode_eight(parameter_list, self.code_list)
 
             elif opcode == 99:
-                keep_going = self.intcode_ninetynine(parameter_list, self.code_list)
+                keep_going = self.intcode_ninetynine(
+                    parameter_list, self.code_list)
 
             else:
                 print('and I oop... opcode error')
         return output
-
-
 
     def intcode_parse(self, code):
         """Accepts intcode.  Parses intcode and returns individual parameters. """
@@ -98,9 +97,8 @@ class IntCode:
         while parameter_piece > 0:
             parameter_code_list.append(parameter_piece % 10)
             parameter_piece = parameter_piece // 10
-    
-        return (actual_code, parameter_code_list)
 
+        return (actual_code, parameter_code_list)
 
     def parameter_parser(self, parameter_code_list, parameter_list, code_list, opcode):
         """
@@ -120,21 +118,22 @@ class IntCode:
 
         if opcode in {4} and len(parameter_code_list) < 1:
             parameter_list[-1] = self.code_list[parameter_list[-1]]
-            
-        if opcode in {5, 6 } and len(parameter_code_list) < 2:
-            parameter_list[-1] = self.code_list[parameter_list[-1]]
-        
-        return parameter_list
 
+        if opcode in {5, 6} and len(parameter_code_list) < 2:
+            parameter_list[-1] = self.code_list[parameter_list[-1]]
+
+        return parameter_list
 
     def intcode_one(self, parameter_list, code_list):
         """Adds elements in the parameter_list's first two elements.  Places sum in parameter_list[2]. Returns True. """
-        self.code_list[parameter_list[2]] = parameter_list[0] + parameter_list[1]
+        self.code_list[parameter_list[2]
+                       ] = parameter_list[0] + parameter_list[1]
         return True
 
     def intcode_two(self, parameter_list, code_list):
         """Multiplies elements in the parameter_list's first two elements.  Places product in parameter_list[2]. Returns True. """
-        self.code_list[parameter_list[2]] = parameter_list[0] * parameter_list[1]
+        self.code_list[parameter_list[2]
+                       ] = parameter_list[0] * parameter_list[1]
         return True
 
     def intcode_three(self, parameter_list, code_list, input_code):
@@ -174,21 +173,19 @@ class IntCode:
             self.code_list[parameter_list[2]] = 0
         return True
 
-
     def intcode_ninetynine(self, parameter_list, code_list):
         """Returns False, so we can exit loop and script."""
         return False
 
 
-
-
-code_list = [3,8,1001,8,10,8,105,1,0,0,21,46,63,76,97,118,199,280,361,442,99999,3,9,102,4,9,9,101,2,9,9,1002,9,5,9,101,4,9,9,102,2,9,9,4,9,99,3,9,101,5,9,9,102,3,9,9,101,3,9,9,4,9,99,3,9,1001,9,2,9,102,3,9,9,4,9,99,3,9,1002,9,5,9,101,4,9,9,1002,9,3,9,101,2,9,9,4,9,99,3,9,1002,9,5,9,101,3,9,9,1002,9,5,9,1001,9,5,9,4,9,99,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,99,3,9,1002,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,102,2,9,9,4,9,99,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,99,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,2,9,9,4,9,99,3,9,101,1,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,2,9,9,4,9,99]
+code_list = [3, 8, 1001, 8, 10, 8, 105, 1, 0, 0, 21, 46, 63, 76, 97, 118, 199, 280, 361, 442, 99999, 3, 9, 102, 4, 9, 9, 101, 2, 9, 9, 1002, 9, 5, 9, 101, 4, 9, 9, 102, 2, 9, 9, 4, 9, 99, 3, 9, 101, 5, 9, 9, 102, 3, 9, 9, 101, 3, 9, 9, 4, 9, 99, 3, 9, 1001, 9, 2, 9, 102, 3, 9, 9, 4, 9, 99, 3, 9, 1002, 9, 5, 9, 101, 4, 9, 9, 1002, 9, 3, 9, 101, 2, 9, 9, 4, 9, 99, 3, 9, 1002, 9, 5, 9, 101, 3, 9, 9, 1002, 9, 5, 9, 1001, 9, 5, 9, 4, 9, 99, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 99, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 1002, 9, 2, 9,
+             4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 99, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 99, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1001, 9, 1, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 99, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 1002, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 101, 1, 9, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 3, 9, 1001, 9, 2, 9, 4, 9, 3, 9, 102, 2, 9, 9, 4, 9, 3, 9, 101, 2, 9, 9, 4, 9, 99]
 
 
 # code_list_test = [3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0]
 
 
-#Creates the computers
+# Creates the computers
 comp_1 = IntCode(code_list)
 comp_2 = IntCode(code_list)
 comp_3 = IntCode(code_list)
@@ -197,14 +194,14 @@ comp_5 = IntCode(code_list)
 
 
 thrusters = 0
-for test in list(permutations(range(0,5))):
-    output  = 0
+for test in list(permutations(range(0, 5))):
+    output = 0
     i = 0
     for computer in [comp_1, comp_2, comp_3, comp_4, comp_5]:
         output = computer.intcode_run(test[i], output)
-        i+=1
+        i += 1
     if thrusters == 0 or output > thrusters:
-            thrusters = output
+        thrusters = output
 
 
 print(thrusters)
