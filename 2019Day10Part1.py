@@ -23,7 +23,7 @@ def get_asteroid_layout(asteroid_map):
     return asteroid_layout
 
 def can_asteroid_see_you(asteroid, other_asteroid, asteroid_layout):
-    """Reads two asteroids (tuples) and an asteroid_map (list).  Returns whether or not the asteroids can see each other."""
+    """Reads two asteroids (tuples) and an asteroid_layout (list).  Returns whether or not the asteroids can see each other."""
     asteroid_x = asteroid[0]
     asteroid_y = asteroid[1]
     other_x = other_asteroid[0]

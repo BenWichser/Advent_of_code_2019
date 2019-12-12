@@ -66,12 +66,50 @@ def asteroid_counter(asteroid, asteroid_layout):
                 seen +=1    
     return seen
 
+def asteroid_zapped(asteroid, aim_spot, asteroid_layout):
+    """Reads asteroid center and aim_spot (tuples) and an asteroid_layout (list).  Returns which asteroid, if any, is hit."""
+    asteroid_x = asteroid[0]
+    asteroid_y = asteroid[1]
+    other_x = other_asteroid[0]
+    other_y = other_asteroid[1]
+    delta_x = other_x  - asteroid_x
+    delta_y = other_y - asteroid_y
+
+
+    #Vertical lines have no slope.  We check by changing y only
+    if delta_x == 0:
+        min_y = min(asteroid_y, other_y)
+        for i in range(1, abs(delta_y)):
+            if (asteroid_x, min_y + i) in asteroid_layout:
+                return False
+    #Non-vertical lines have slope.  We check by chaning by one x and the slope and see if there's an asteroid there.
+    else:
+        slope = delta_y / delta_x
+        #We start with the asteroid on the left
+        if asteroid_x < other_x:
+            min_x = asteroid_x
+            min_x_y = asteroid_y
+        else:
+            min_x = other_x
+            min_x_y = other_y
+        #Checking all the spots along the way for asteroids.
+        for i in range(1, abs(delta_x)):
+            maybe_other = (min_x + i, min_x_y + i*slope)
+            if maybe_other in asteroid_layout:
+                return False
+
+    return True
+
+
 asteroid_map = get_asteroid_map('./asteroid_locations.txt')
 asteroid_layout = get_asteroid_layout(asteroid_map)
 
 max_seen = 0
 for asteroid in asteroid_layout:
     seen = asteroid_counter(asteroid, asteroid_layout)
-    max_seen = max(seen, max_seen)
+    if seen > max_seen:
+        max_seen = seen
+        best_asteroid = asteroid
 
-print(max_seen)
+print(max_seen, best_asteroid)
+
