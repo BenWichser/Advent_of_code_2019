@@ -173,7 +173,6 @@ def intcode_ninetynine(parameter_list, code_list):
 
 
 
-###Need to do: Lengthen the parser to be length for each code.  Take parameters one at a time and change them to list index pointers along the way (ensuring code list is long enough each time).  Alter incode operations to account for this.
 i = 0
 relative_base = 0
 keep_going = True
