@@ -6,7 +6,7 @@
 class Moon:
     """ Moon class."""
 
-    def __init__(self,position_x, position_y, position_z):
+    def __init__(self, position_x, position_y, position_z):
         """Initialization.  Creates moon at given position.  Creates initial velocity of zero in all three dimensions as well."""
 
         self.position_x = position_x
@@ -47,11 +47,12 @@ class Moon:
     def energy_calculation(self):
         """Calculates this moon's energy is the product of the sum of the absolute positions and product of the absolute velocities.  Returns the energy amount."""
 
-        energy = (abs(self.position_x) + abs(self.position_y) + abs(self.position_z)) * ( abs(self.velocity_x) + abs(self.velocity_y) + abs(self.velocity_z))
+        energy = (abs(self.position_x) + abs(self.position_y) + abs(self.position_z)) * \
+            (abs(self.velocity_x) + abs(self.velocity_y) + abs(self.velocity_z))
         return energy
 
 
-#Initial Moon Locations (input from AdventOfCode)
+# Initial Moon Locations (input from AdventOfCode)
 # <x=-1, y=-4, z=0>
 # <x=4, y=7, z=-1>
 # <x=-14, y=-10, z=9>
@@ -66,14 +67,14 @@ time = 1
 moons = [io, europa, ganymede, callisto]
 
 print(moons)
-while time <=1000:
+while time <= 1000:
     for moon in moons:
         moon.velocity_update(moons)
-    
+
     for moon in moons:
         moon.position_update()
 
-    time +=1
+    time += 1
 
 
 total_energy = 0
