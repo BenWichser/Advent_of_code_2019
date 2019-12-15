@@ -105,9 +105,10 @@ def intcode_two(parameter_list, code_list, relative_base):
     return True
 
 
-def intcode_three(parameter_list, code_list, relative_base, grid, current):
+def intcode_three(parameter_list, code_list, relative_base, grid):
     """ Accepts input and places it in parameter_list[0] place in code_list.  Returns True. """
-    number_in = color_coder(grid, current)
+    #setting number_in to 0.  no inputs in this particular intcomp
+    number_in = 0
     if parameter_list[0][0] == 0:
         code_list = code_list_lengthener(code_list, parameter_list[0][1])
         code_list[parameter_list[0][1]] = number_in
@@ -263,7 +264,7 @@ while keep_going:
 
         elif opcode == 3:
             intcode_three(parameter_list, code_list,
-                          relative_base, grid, current)
+                          relative_base, grid)
 
         elif opcode == 4:
             instruction_list.append(intcode_four(
