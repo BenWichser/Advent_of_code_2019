@@ -24,13 +24,12 @@ class IntCode:
         self.code_list[0] = 2
 
     
-    def intcode_run(self, o_location, paddle_location):
+    def intcode_run(self, computer_input):
         """
         Runs computer.   Returns output from code 4 or 'Halt' from code 99
         """
 
-        self.o_location = o_location
-        self.paddle_location = paddle_location
+        self.computer_input = computer_input
         
         while True:
 
@@ -63,14 +62,8 @@ class IntCode:
 
             elif self.opcode == 3:
                 # joystick_position = int(input("Please enter joystick position: ") or "0")
-                if self.o_location[1] > self.paddle_location[1]:
-                    self.joystick_position  = 1
-                elif self.o_location[1] < self.paddle_location[1]:
-                    self.joystick_position = -1
-                else:
-                    self.joystick_position = 0
                 self.__intcode_three(self.parameter_list, self.code_list,
-                            self.relative_base, self.joystick_position)
+                            self.relative_base, self.computer_input)
             
 
             elif self.opcode == 4:
@@ -196,9 +189,9 @@ class IntCode:
         return True
 
 
-    def __intcode_three(self, parameter_list, code_list, relative_base, joystick_position):
+    def __intcode_three(self, parameter_list, code_list, relative_base, computer_input):
         """ Accepts input and places it in parameter_list[0] place in code_list.  Returns True. """
-        self.number_in = self.joystick_position
+        self.number_in = computer_input
         if self.parameter_list[0][0] == 0:
             self.code_list = self.__code_list_lengthener(self.code_list, self.parameter_list[0][1])
             self.code_list[self.parameter_list[0][1]] = self.number_in
@@ -320,29 +313,22 @@ class Breakout:
         keep_going = True
         while keep_going:
             while len(instruction_list) < 3:
-                output = self.computer.intcode_run(self._ball_location, self._paddle_location)
+                self._computer_input = self.__input_generator(self._ball_location, self._paddle_location)
+                output = self.computer.intcode_run(self._computer_input)
                 if output == 'Halt':
                     keep_going = False
                 else:
                     instruction_list.append(output)
 
-            if instruction_list[0] == -1 and instruction_list[1] == 0:
-                number_of_blocks = 0
-                for k in range(len(grid)):
-                    for j in range(len(grid[k])):
-                        if grid[k][j] == 'B':
-                            number_of_blocks += 1
-                if number_of_blocks == 0:
-                    print('Final score:', instruction_list[2])
-                    keep_going = False
-
+            game_won = self.__win_check(instruction_list)
+            if game_won == True:
+                keep_going = False
+            
             else:
-                grid, self._ball_location, self._paddle_location  = self.__update_game(self._grid, instruction_list)
+                self._grid, self._ball_location, self._paddle_location  = self.__update_game(self._grid, instruction_list)
                 self.print_grid(self._grid)
 
-
             instruction_list = []
-
 
 
     def print_grid(self, grid):
@@ -353,6 +339,20 @@ class Breakout:
                     print(column, end='')
             print('')
         return True
+
+
+    def __input_generator(self, ball_location, paddle_location):
+        """ Private.  Accepts ball and paddle locations.  Produces and returns the input for computer (paddle movement)."""
+        if ball_location[1] > paddle_location[1]:
+            computer_input  = 1
+        elif ball_location[1] < paddle_location[1]:
+            computer_input = -1
+        else:
+            computer_input = 0
+
+        return computer_input
+
+
 
     def __grid_maker(self, width, height):
         """Private method.  Accepts width, height (ints).  Returns width x height grid with '.' as values."""
@@ -384,6 +384,19 @@ class Breakout:
 
         return grid, self._ball_location, self._paddle_location
 
+    
+    def __win_check(self, instruction_list):
+        """Private.  Checks to see if the game is won.  If so, returns True and prints score.  Else returns false."""
+        if instruction_list[0] == -1 and instruction_list[1] == 0:
+            number_of_blocks = 0
+            for k in range(len(self._grid)):
+                for j in range(len(self._grid[k])):
+                    if self._grid[k][j] == 'B':
+                        number_of_blocks += 1
+            if number_of_blocks == 0:
+                print('Final score:', instruction_list[2])
+                return True
+        return False
 
     
 
