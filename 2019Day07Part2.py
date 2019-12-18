@@ -12,14 +12,11 @@ class IntCode:
     IntCode Computer.
     """
 
-
     def __init__(self, list_of_codes):
         """
         Init.  Creates computer.
         """
-
         self.code_base = list_of_codes[:]
-
 
     def intcode_phase_setter(self, phase_setting):
         """
@@ -44,9 +41,7 @@ class IntCode:
                 self.phase_setting)
         else:
             print('And I oop...initial code is not 3.')
-
         return self.i
-
 
     def intcode_run(self, comp_input, i):
         """
@@ -63,7 +58,8 @@ class IntCode:
             (opcode, parameter_code_list) = self.intcode_parse(raw_opcode)
             # parses parameter_code_list
             parameter_list = self.parameter_parser(
-                parameter_code_list, raw_parameter_list, self.code_list, opcode)
+                parameter_code_list, raw_parameter_list, self.code_list,
+                opcode)
 
             if opcode == 1:
                 self.intcode_one(parameter_list, self.code_list)
@@ -88,12 +84,11 @@ class IntCode:
             elif opcode == 8:
                 self.intcode_eight(parameter_list, self.code_list)
             elif opcode == 99:
-                #self.intcode_ninetynine(parameter_list, self.code_list)
+                # self.intcode_ninetynine(parameter_list, self.code_list)
                 return 0, False
             else:
                 print('and I oop... opcode error')
         print('And I oop...out of while loop...')
-
 
     def create_opcode(self, code_list, i):
         self.i = i
@@ -113,7 +108,6 @@ class IntCode:
             self.i += 1
         return opcode, raw_parameter_list, self.i
 
-
     def intcode_parse(self, code):
         """
         Accepts intcode.  Parses intcode and returns individual parameters.
@@ -127,7 +121,6 @@ class IntCode:
             parameter_code_list.append(parameter_piece % 10)
             parameter_piece = parameter_piece // 10
         return (actual_code, parameter_code_list)
-
 
     def parameter_parser(self, parameter_code_list,
                          parameter_list, code_list, opcode):
@@ -152,7 +145,6 @@ class IntCode:
             parameter_list[-1] = self.code_list[parameter_list[-1]]
         return parameter_list
 
-
     def intcode_one(self, parameter_list, code_list):
         """
         Adds elements in the parameter_list's first two elements.  Places
@@ -161,7 +153,6 @@ class IntCode:
         self.code_list[parameter_list[2]
                        ] = parameter_list[0] + parameter_list[1]
         return True
-
 
     def intcode_two(self, parameter_list, code_list):
         """
@@ -172,7 +163,6 @@ class IntCode:
                        ] = parameter_list[0] * parameter_list[1]
         return True
 
-
     def intcode_three(self, parameter_list, code_list, input_code):
         """
         Accepts input_code and places it in parameter_list[0] place in
@@ -180,14 +170,12 @@ class IntCode:
         self.code_list[parameter_list[0]] = input_code
         return True
 
-
     def intcode_four(self, parameter_list, code_list):
         """
         Prints returns item  in parameter_list[0] place in code_list.
         Returns True.
         """
         return parameter_list[0]
-
 
     def intcode_five(self, parameter_list, code_list, i):
         """
@@ -198,7 +186,6 @@ class IntCode:
             i = parameter_list[1]
         return i
 
-
     def intcode_six(self, parameter_list, code_list, i):
         """"
         If first parameter is zero, sets instruction pointer to second
@@ -207,7 +194,6 @@ class IntCode:
         if parameter_list[0] == 0:
             i = parameter_list[1]
         return i
-
 
     def intcode_seven(self, parameter_list, code_list):
         """
@@ -220,7 +206,6 @@ class IntCode:
             self.code_list[parameter_list[2]] = 0
         return True
 
-
     def intcode_eight(self, parameter_list, code_list):
         """
         If first parameter is equal to  second parameter, stores 1 in third
@@ -231,7 +216,6 @@ class IntCode:
         else:
             self.code_list[parameter_list[2]] = 0
         return True
-
 
     def intcode_ninetynine(self, parameter_list, code_list):
         """Returns False, so we can exit loop and script."""
@@ -258,16 +242,24 @@ def subsequent_computer_run(computers):
         output, index = computers[i][0].intcode_run(output, computers[i][1])
         computers[i][1] = index
         if i == 4:
-            if index != False:
+            if index is not False:
                 last_e_output = output
-            elif index == False:
+            elif index is False:
                 return last_e_output
         i = (i+1) % 5
 
 
-#First sample code list
+# First sample code list
+# code_list = [3, 26, 1001, 26, -4, 26, 3, 27, 1002, 27, 2, 27, 1, 27, 26,
+#             27, 4, 27, 1001, 28, -1, 28, 1005, 28, 6, 99, 0, 0, 5]
 
-#Puzzle code list
+# Second sample code list
+# code_list = [3, 52, 1001, 52, -5, 52, 3, 53, 1, 52, 56, 54, 1007, 54, 5, 55,
+#   1005, 55, 26, 1001, 54, -5, 54, 1105, 1, 12, 1, 53, 54, 53, 1008, 54, 0,
+#   55, 1001, 55, 1, 55, 2, 53, 55, 53, 4, 53, 1001, 56, -1, 56, 1005, 56, 6,
+#   99, 0, 0, 0, 0, 10]
+
+# Puzzle code list
 code_list = [
     3, 8, 1001, 8, 10, 8, 105, 1, 0, 0, 21, 46, 63, 76, 97, 118, 199, 280, 361,
     442, 99999, 3, 9, 102, 4, 9, 9, 101, 2, 9, 9, 1002, 9, 5, 9, 101, 4, 9, 9,
